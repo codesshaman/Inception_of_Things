@@ -26,7 +26,7 @@ Vagrant 2.2.19
 
 ### Шаг 2. Образ с vagrantup
 
-Заходим на [vagrantup](https://app.vagrantup.com/boxes/ "vagrantup") и находим любимый дистрибутив операционной системы. Я выбрал Debian от bentoo. Заходим на страницу дистрибутива, копируем название образа из средней строчки Vagrantfile и скачиваем образ для virtualbox:
+Заходим на [vagrantup](https://app.vagrantup.com/boxes/search "vagrantup") и находим любимый дистрибутив операционной системы. Я выбрал Debian от bentoo. Заходим на страницу дистрибутива, копируем название образа из средней строчки Vagrantfile и скачиваем образ для virtualbox:
 
 ![vagrant](media/vagrant/step_02.png)
 
