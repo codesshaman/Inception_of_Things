@@ -46,9 +46,20 @@ Vagrant 2.2.19
 
 ``vagrant init -m bento/debian-11 debian``
 
+Вагрант ответит нам следующим выводом:
+
+```
+A `Vagrantfile` has been placed in this directory. You are now
+ready to `vagrant up` your first virtual environment! Please read
+the comments in the Vagrantfile as well as documentation on
+`vagrantup.com` for more information on using Vagrant.
+```
+
 Теперь нужно поднять конфигурацию командой
 
-``vagrant up``
+``vagrant up --provider=virtualbox``
+
+Как мы можем увидеть, в качестве флага можно задать имя желаемого провайдера (нашей системы виртуализации).
 
 В результате vagrant скажет, что всё получилось:
 
