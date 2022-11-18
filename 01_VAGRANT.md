@@ -71,16 +71,32 @@ the comments in the Vagrantfile as well as documentation on
 
 Тестовый запуск состоялся! Теперь можно выключать машину и настраивать Vagrantfile.
 
-### Шаг 3. Конфигурация Vagrantfile
+### Шаг 3. Конфигурация переменных
 
-Vagrant написан на go, и потому его конфигурационные файлы мы тоже будем писать на этом языке. Начнём с шапки:
+Откроем на редактирование наш Vagrantfile:
+
+nano Vagrantfile
+
+И увидим, что в нём уже есть некоторая конфигурация:
+
+```
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/debian-11"
+  config.vm.box_url = "debian"
+end
+```
+
+Vagrant написан на go, и потому его конфигурационные файлы мы тоже будем писать на этом языке. Вставим прямо после шапки
 
 ```
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 ```
 
-Зададим переменные для всех необходимых нам параметров:
+Следующий код, который задаёт переменные для всех необходимых нам параметров:
 
 ```
 # master config
@@ -92,54 +108,108 @@ MASTER_NODE_IP = '192.168.56.110'
 WORKER_NODE_NAME = 'Caugusta'
 WORKER_NODE_HOSTNAME = 'ServerWorker'
 WORKER_NODE_IP = '192.168.56.111'
+
+# machines config
+MEM = 512
+CPU = 1
 ```
+
+Здесь ``MASTER_NODE_NAME`` - ник одного из участников команды, ``WORKER_NODE_NAME`` - ник другого участника (если работа не в команде, можно придумать иные обозначения).
+
+``MASTER_NODE_HOSTNAME = 'Server'`` и ``WORKER_NODE_HOSTNAME = 'ServerWorker'`` заданы по сабжу именно так, айпи адреса тоже прописаны жёстко какие должны быть по сабжу.
+
+Размер памяти - от 512 до 1024, так же выделяем 1 - 2 ядра на выбор. Можно задать обеим машинам одинаковые параметры а можно задать мастер ноде вдвое больше ресурсов, чем рабочей ноде.
+
+### Шаг 4. Конфигурация образа
+
+Настроим образ, из которого будем разворачивать машину. Для этого слегка дополним те параметры, которые уже были в файле когда мы его открыли.
+
+Здесь мы сообщаем вагранту, что будем разворачивать конфигурации из нашего образа с заданными параметрами cpu и памяти:
+
+```
+# create machines config
+Vagrant.configure("2") do |config|
+	config.vm.box = "bento/debian-11"
+  config.vm.box_url = "debian"
+	config.vm.provider "virtualbox" do |v|
+		v.memory = MEM
+		v.cpus = CPU
+	end
+```
+
+В терминологии vagrant провайдеры - это просто разные типы виртуалок. Так как мы используем virtualbox, прописываем в провайдеры его.
+
+### Шаг 5. Добавляем машины
+
+Теперь пропишем две машины, которые будем поднимать:
+
+```
+  # master node config
+	config.vm.define MASTER_NODE_NAME do |master|
+		master.vm.hostname = MASTER_NODE_HOSTNAME
+		master.vm.network :private_network, ip: MASTER_NODE_IP
+		master.vm.provider "virtualbox" do |v|
+			v.name = MASTER_NODE_NAME
+		end
+	end
+
+  # worker node config
+	config.vm.define WORKER_NODE_NAME do |worker|
+		worker.vm.hostname = WORKER_NODE_HOSTNAME
+		worker.vm.network :private_network, ip: WORKER_NODE_IP 	
+		worker.vm.provider "virtualbox" do |v|
+			v.name = WORKER_NODE_NAME 
+		end
+	end
+end
+```
+
+Здесь мы задаём им приватную сеть с установленными вручную статическими ip из нашего гайда. И конечно же задаём имя каждой машине.
+
+Таким образом весь наш Vagrantfile выглядит примерно так:
 
 ```
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+
+# master config
+MASTER_NODE_NAME = 'Jleslie'
+MASTER_NODE_HOSTNAME = 'Server'
+MASTER_NODE_IP = '192.168.56.110'
+
+# worker config
+WORKER_NODE_NAME = 'Caugusta'
+WORKER_NODE_HOSTNAME = 'ServerWorker'
+WORKER_NODE_IP = '192.168.56.111'
+
+# machines config
+MEM = 512
+CPU = 1
+
+# create machines config
 Vagrant.configure("2") do |config|
-  # Создание виртуальной машины
-  master.vm.box = "debian/bullseye64"
-  
-  # Конфигурация сети
-  
-  # Синхронизация папок
-  
-  # Настройки провайдеров
+	config.vm.box = "bento/debian-11"
+	config.vm.provider "virtualbox" do |v|
+		v.memory = MEM
+		v.cpus = CPU
+	end
 
-  # Дополнительные скрипты
+  # master node config
+	config.vm.define MASTER_NODE_NAME do |master|
+		master.vm.hostname = MASTER_NODE_HOSTNAME
+		master.vm.network :private_network, ip: MASTER_NODE_IP
+		master.vm.provider "virtualbox" do |v|
+			v.name = MASTER_NODE_NAME
+		end
+	end
 
+  # worker node config
+	config.vm.define WORKER_NODE_NAME do |worker|
+		worker.vm.hostname = WORKER_NODE_HOSTNAME
+		worker.vm.network :private_network, ip: WORKER_NODE_IP 	
+		worker.vm.provider "virtualbox" do |v|
+			v.name = WORKER_NODE_NAME 
+		end
+	end
 end
-
 ```
-### Шаг 4. Конфигурация сети и папок
-
-Переходим к следующему пункту. Для нашей машины укажем способ подключения, и это будет ssh:
-
-``master.vm.communicator = "ssh"``
-
-Зададим машине имя хоста:
-
-``master.vm.hostname = "master"``
-
-Настроем машине сеть, используя частные адреса, задав IP принудительно через переменную:
-
-``master.vm.network "private_network", ip: MASTER_NODE_IP``
-
-Пробросим нужные порты в гостевую систему:
-
-```
-master.vm.network "forwarded_port", guest: 80, host: 80
-master.vm.network "forwarded_port", guest: 42, host: 42
-master.vm.network "forwarded_port", guest: 443, host: 443
-```
-
-Теперь в разделе "Синхронизация папок" укажем единственный нужный нам параметр:
-
-``master.vm.synced folder ".", "/vagrant", disabled: true``
-
-Этот параметр отменяет какое-либо монтирование внешних папок в наш образ.
-
-### Шаг 5. Работа с провайдерами
-
-В терминологии vagrant провайдеры - это просто разные типы виртуалок. Так как мы используем virtualbox, подробный api этого провайдера мы можем найти [на этой странице](https://www.virtualbox.org/manual/ch08.html "VBoxManage")
