@@ -213,3 +213,35 @@ Vagrant.configure("2") do |config|
 	end
 end
 ```
+
+### Шаг 6. Пересобираем проект с новым Vagrantfile
+
+Теперь удалим нашу машину и соберём конфигурацию заново. Сначала выключим работающую виртуалку, созданную vagrant-ом, затем удалим конфигурацию вместе со всеми файлами:
+
+![vagrant](media/vagrant/step_05.png)
+
+Перейдём в папку нашими боксами:
+
+``cd ~/.vagrant.d/boxes``
+
+и удалим наш бокс вагранта:
+
+![vagrant](media/vagrant/step_06.png)
+
+Теперь вернёмся в папку vagrant_debian, где уже лежит изменённый Vagrantfile:
+
+``cd ~/goinfre/vagrant_debian``
+
+Соберём нашу конфигурацию с новым Vagrantfile:
+
+``vagrant box add bento/debian-11 debian``
+
+И снова запустим конфигурацию:
+
+``vagrant up --provider=virtualbox``
+
+На этом этапе в virtualbox должны появиться две нужные нам машины:
+
+![vagrant](media/vagrant/step_07.png)
+
+Отлично, наши машины работают. Продолжим их настройку.
