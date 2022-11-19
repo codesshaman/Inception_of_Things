@@ -213,7 +213,6 @@ Vagrant.configure("2") do |config|
 	end
 end
 ```
-<<<<<<< HEAD
 
 ### Шаг 6. Пересобираем проект с новым Vagrantfile
 
@@ -246,5 +245,3 @@ end
 ![vagrant](media/vagrant/step_07.png)
 
 Отлично, наши машины работают. Продолжим их настройку.
-=======
->>>>>>> d020621389bbf244cf3df2de7a133df938fcbea3
