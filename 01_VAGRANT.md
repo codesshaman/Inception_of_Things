@@ -32,7 +32,7 @@ Vagrant 2.2.19
 
 У нас скачался файл с длинным названием (в моём случае "a22d1053-8311-450b-a740-6e3017c087f8"). Я создам папку проетка в goinfree:
 
-``cd ~/goingree && mkdir vagrant_debian``
+``cd ~/goinfre && mkdir vagrant_debian``
 
 Перемещаю скачанный образ в эту (он скачался тоже в goinfre) папку и даю ему удобочитаемое имя:
 
@@ -213,6 +213,7 @@ Vagrant.configure("2") do |config|
 	end
 end
 ```
+<<<<<<< HEAD
 
 ### Шаг 6. Пересобираем проект с новым Vagrantfile
 
@@ -245,3 +246,5 @@ end
 ![vagrant](media/vagrant/step_07.png)
 
 Отлично, наши машины работают. Продолжим их настройку.
+=======
+>>>>>>> d020621389bbf244cf3df2de7a133df938fcbea3
